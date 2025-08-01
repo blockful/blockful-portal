@@ -6,6 +6,7 @@ import { Receipt, List, Calendar, DollarSign, FileText, AlertCircle, CheckCircle
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { reimbursementsApi } from "@/app/shared/server/reimbursements";
+import { PaymentButton } from "@/components/PaymentButton";
 
 interface ReimbursementItem {
   id: string;
@@ -19,6 +20,7 @@ interface ReimbursementItem {
   status: string;
   fileName: string;
   createdAt: string;
+  paymentStatus?: 'pending' | 'paid' | 'failed';
 }
 
 export default function AdminReimbursementPage() {
@@ -127,8 +129,7 @@ export default function AdminReimbursementPage() {
                 {reimbursements.map((reimbursement) => (
                   <div
                     key={reimbursement.id}
-                    className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 transition-colors duration-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
-                    onClick={() => router.push('/admin/reimbursements')}
+                    className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 transition-colors duration-300 hover:bg-gray-100 dark:hover:bg-gray-600"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -139,6 +140,17 @@ export default function AdminReimbursementPage() {
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(reimbursement.status)}`}>
                             {reimbursement.status}
                           </span>
+                          {reimbursement.paymentStatus && (
+                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                              reimbursement.paymentStatus === 'paid' 
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200'
+                                : reimbursement.paymentStatus === 'failed'
+                                ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200'
+                                : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200'
+                            }`}>
+                              {reimbursement.paymentStatus}
+                            </span>
+                          )}
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -173,6 +185,78 @@ export default function AdminReimbursementPage() {
                         <div className="text-xs text-gray-500 dark:text-gray-400">
                           Submitted on {formatDate(reimbursement.createdAt)}
                         </div>
+                      </div>
+                      
+                      {/* Payment Section */}
+                      <div className="ml-6 flex flex-col items-end space-y-2">
+                        <div className="text-right">
+                          <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                            {formatCurrency(reimbursement.amount, reimbursement.currency)}
+                          </div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            {reimbursement.userEmail}
+                          </div>
+                        </div>
+                        
+                        {reimbursement.status.toLowerCase() === 'approved' && (
+                          <PaymentButton
+                            amount={reimbursement.amount}
+                            currency={reimbursement.currency}
+                            recipientAddress={reimbursement.userAddress || '0x0000000000000000000000000000000000000000'}
+                            reimbursementId={reimbursement.id}
+                            onPaymentSuccess={() => {
+                              setMessage({
+                                type: 'success',
+                                text: `Payment sent for reimbursement ${reimbursement.id}`
+                              });
+                            }}
+                          />
+                        )}
+                        
+                        {reimbursement.status.toLowerCase() !== 'approved' && (
+                          <div className="space-y-2">
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                              Status: {reimbursement.status}
+                            </div>
+                            <button
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                try {
+                                  const response = await fetch(`/api/reimbursements/${reimbursement.id}`, {
+                                    method: 'PATCH',
+                                    headers: {
+                                      'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({ status: 'approved' }),
+                                  });
+                                  
+                                  if (response.ok) {
+                                    setMessage({
+                                      type: 'success',
+                                      text: `Reimbursement ${reimbursement.id} marked as approved`
+                                    });
+                                    // Reload reimbursements to reflect the change
+                                    loadReimbursements();
+                                  } else {
+                                    setMessage({
+                                      type: 'error',
+                                      text: 'Failed to update reimbursement status'
+                                    });
+                                  }
+                                } catch (error) {
+                                  console.error('Error updating status:', error);
+                                  setMessage({
+                                    type: 'error',
+                                    text: 'Failed to update reimbursement status'
+                                  });
+                                }
+                              }}
+                              className="px-3 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors duration-200"
+                            >
+                              Approve
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
