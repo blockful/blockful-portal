@@ -30,13 +30,8 @@ export interface ReimbursementResponse {
 }
 
 // API client configuration
-const createApiClient = (accessToken?: string) => {
+const createApiClient = () => {
   const headers: Record<string, string> = {};
-
-  // Add authorization header if access token is provided
-  if (accessToken) {
-    headers['Authorization'] = `Bearer ${accessToken}`;
-  }
 
   const apiClient = axios.create({
     baseURL: 'http://localhost:4000',
@@ -76,12 +71,11 @@ export const reimbursementsApi = {
   /**
    * Create a new reimbursement request
    * @param data - Reimbursement data including file
-   * @param accessToken - Optional access token for authentication
    * @returns Promise with the response from the backend
    */
-  createReimbursement: async (data: ReimbursementRequest, accessToken?: string): Promise<ReimbursementResponse> => {
+  createReimbursement: async (data: ReimbursementRequest): Promise<ReimbursementResponse> => {
     try {
-      const apiClient = createApiClient(accessToken);
+      const apiClient = createApiClient();
       
       // Create FormData for file upload
       const formData = new FormData();
@@ -121,7 +115,7 @@ export const reimbursementsApi = {
    */
   getReimbursements: async (accessToken?: string) => {
     try {
-      const apiClient = createApiClient(accessToken);
+      const apiClient = createApiClient();
       const response = await apiClient.get('/reimbursements');
       return {
         reimbursements: response.data.reimbursements || response.data || []
@@ -140,9 +134,9 @@ export const reimbursementsApi = {
    * @param accessToken - Optional access token for authentication
    * @returns Promise with all reimbursements list
    */
-  getAllReimbursements: async (accessToken?: string) => {
+  getAllReimbursements: async () => {
     try {
-      const apiClient = createApiClient(accessToken);
+      const apiClient = createApiClient();
       const response = await apiClient.get('/reimbursements');
       return {
         reimbursements: response.data.reimbursements || response.data || []

@@ -25,22 +25,18 @@ export default function AdminReimbursementPage() {
   const [reimbursements, setReimbursements] = useState<ReimbursementItem[]>([]);
   const [isLoadingReimbursements, setIsLoadingReimbursements] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const { data: session } = useSession();
   const router = useRouter();
 
   // Load reimbursements when component mounts
   useEffect(() => {
-    if (session?.accessToken) {
       loadReimbursements();
-    }
-  }, [session?.accessToken]);
+  }, []);
 
   const loadReimbursements = async () => {
-    if (!session?.accessToken) return;
     
     setIsLoadingReimbursements(true);
     try {
-      const response = await reimbursementsApi.getAllReimbursements(session.accessToken);
+      const response = await reimbursementsApi.getAllReimbursements();
       setReimbursements(response.reimbursements || []);
     } catch (error: any) {
       console.error('Error loading reimbursements:', error);
