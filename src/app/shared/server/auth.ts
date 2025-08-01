@@ -1,6 +1,24 @@
-import NextAuth from "next-auth";
+import NextAuth, { DefaultSession } from "next-auth";
 import GitHub from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
+
+// Extend NextAuth types to include role
+declare module "next-auth" {
+  interface User {
+    role?: string;
+  }
+  interface Session {
+    user: {
+      role?: string;
+    } & DefaultSession["user"];
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    role?: string;
+  }
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -13,12 +31,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
       },
       profile(profile) {
+        console.log(profile);
         return {
           id: profile.id.toString(),
           name: profile.name || profile.login,
           email: profile.email,
           image: profile.avatar_url,
-          role: profile.role ?? "user",
+          role: "employee", // Default role for GitHub users
         };
       },
     }),
@@ -26,6 +45,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       clientId: process.env.AUTH_GOOGLE_ID!,
       clientSecret: process.env.AUTH_GOOGLE_SECRET!,
       allowDangerousEmailAccountLinking: true,
+
       // authorization: {
       //   params: {
       //     prompt: "consent",
@@ -35,24 +55,39 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // },
     }),
   ],
-  // pages: {
-  //   signIn: "/auth/signin",
-  //   error: "/auth/error",
-  // },
+  pages: {
+    signIn: "/login",
+    signOut: "/login",
+    error: "/login",
+  },
   callbacks: {
-    async jwt({ token, account, profile }) {
-      // Persist the OAuth access_token and or the user id to the token right after signin
-      if (account) {
-        token.accessToken = account.access_token;
-        token.provider = account.provider;
+    async signIn({ account, profile }) {
+      if (account?.provider === "google") {
+        return !!(
+          profile?.email_verified && profile?.email?.endsWith("@blockful.io")
+        );
+      }
+      return true; // Do different verification for other providers that don't have `email_verified`
+    },
+    async jwt({ token, user, account }) {
+      // Set default role to employee - role will be managed by client-side context
+      if (user) {
+        token.role = "employee"; // Default role
       }
       return token;
     },
     async session({ session, token }) {
-      // Send properties to the client, like an access_token and user id from a provider.
-      session.accessToken = token.accessToken;
-      session.provider = token.provider;
+      // Add role to session
+      if (token) {
+        session.user.role = token.role as string;
+      }
       return session;
     },
   },
+  //   async session({ session, token }) {
+  //     // Send properties to the client, like an access_token and user id from a provider.
+  //     session.accessToken = token.accessToken;
+  //     return session;
+  //   },
+  // },
 });

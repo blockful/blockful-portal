@@ -1,97 +1,250 @@
 "use client";
 
 import { Header } from "@/components/Header";
-import { useState } from "react";
-import { Bell, Calendar, Tag, Search, Bookmark, Share2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  Bell,
+  Calendar,
+  Tag,
+  Search,
+  Bookmark,
+  Share2,
+  AlertTriangle,
+  Users,
+  Receipt,
+  Clock,
+  CheckCircle,
+  XCircle,
+  TrendingUp,
+  MessageSquare,
+} from "lucide-react";
+import { useGitHubMembers, GitHubMember } from "@/hooks/useGitHubMembers";
 
-interface News {
+interface NewsItem {
   id: string;
   title: string;
   content: string;
-  category: string;
+  category: "OOO" | "Reimbursements" | "Team News" | "Alerts";
   author: string;
+  authorAvatar?: string;
   date: string;
   isImportant: boolean;
   isRead: boolean;
   tags: string[];
+  status?: "pending" | "approved" | "rejected" | "active" | "completed";
+  priority?: "low" | "medium" | "high" | "critical";
 }
 
-export default function NewsPage() {
+export default function GateFulNewsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showOnlyImportant, setShowOnlyImportant] = useState(false);
+  const [news, setNews] = useState<NewsItem[]>([]);
 
-  const news: News[] = [
-    {
-      id: "1",
-      title: "New Remote Work Policy",
-      content:
-        "Starting next month, we will implement a new remote work policy that will allow employees to work from home up to 3 days per week. This change aims to improve work-life balance.",
-      category: "Policies",
-      author: "Human Resources",
-      date: "2024-01-15",
-      isImportant: true,
-      isRead: false,
-      tags: ["remote work", "policy", "benefits"],
-    },
-    {
-      id: "2",
-      title: "Quarter Results - 25% Growth",
-      content:
-        "We are pleased to announce that our company achieved 25% growth in the last quarter. This result is the fruit of the dedicated work of the entire team and the trust of our clients.",
-      category: "Results",
-      author: "Management",
-      date: "2024-01-10",
-      isImportant: true,
-      isRead: true,
-      tags: ["results", "growth", "success"],
-    },
-    {
-      id: "3",
-      title: "New Project Management System",
-      content:
-        "We are implementing a new project management system that will significantly improve our productivity and communication between teams. Training will be offered next week.",
-      category: "Technology",
-      author: "IT",
-      date: "2024-01-08",
-      isImportant: false,
-      isRead: false,
-      tags: ["system", "productivity", "training"],
-    },
-    {
-      id: "4",
-      title: "Company Event - January 2024",
-      content:
-        "Next Saturday, January 20th, we will hold our annual company event. The event will be held at Central Event Space, starting at 7pm. All employees are invited!",
-      category: "Events",
-      author: "Communication",
-      date: "2024-01-05",
-      isImportant: false,
-      isRead: true,
-      tags: ["event", "celebration", "social"],
-    },
-    {
-      id: "5",
-      title: "Health Plan Update",
-      content:
-        "We inform you that our health plan has been updated with new coverages and benefits. Starting in February, all employees will have access to online consultations and expanded dental coverage.",
-      category: "Benefits",
-      author: "Human Resources",
-      date: "2024-01-03",
-      isImportant: false,
-      isRead: false,
-      tags: ["health", "benefits", "plan"],
-    },
-  ];
+  // Buscar membros do GitHub
+  const { members } = useGitHubMembers({ org: "blockful" });
 
-  const categories = [
-    "All",
-    "Policies",
-    "Results",
-    "Technology",
-    "Events",
-    "Benefits",
-  ];
+  useEffect(() => {
+    if (members.length > 0) {
+      // Criar notícias com dados reais dos membros
+      const createNewsWithRealMembers = (): NewsItem[] => {
+        const teamMembers = members.slice(0, 5); // Usar os primeiros 5 membros
+
+        return [
+          // OOO Section - usando membros reais
+          {
+            id: "ooo-1",
+            title: `${
+              teamMembers[0]?.name || teamMembers[0]?.login || "João Silva"
+            } - Out of Office`,
+            content: `${
+              teamMembers[0]?.name || teamMembers[0]?.login || "João Silva"
+            } will be out of office from January 20th to January 25th for vacation. During this period, please contact ${
+              teamMembers[1]?.name || teamMembers[1]?.login || "Maria Santos"
+            } for urgent matters.`,
+            category: "OOO",
+            author:
+              teamMembers[0]?.name || teamMembers[0]?.login || "João Silva",
+            authorAvatar: teamMembers[0]?.avatar_url,
+            date: "2024-01-18",
+            isImportant: true,
+            isRead: false,
+            tags: ["vacation", "ooo", "team"],
+            status: "active",
+          },
+          {
+            id: "ooo-2",
+            title: `${
+              teamMembers[1]?.name || teamMembers[1]?.login || "Ana Costa"
+            } - Sick Leave`,
+            content: `${
+              teamMembers[1]?.name || teamMembers[1]?.login || "Ana Costa"
+            } is on sick leave today. Her tasks have been temporarily reassigned to the development team.`,
+            category: "OOO",
+            author:
+              teamMembers[1]?.name || teamMembers[1]?.login || "Ana Costa",
+            authorAvatar: teamMembers[1]?.avatar_url,
+            date: "2024-01-19",
+            isImportant: false,
+            isRead: true,
+            tags: ["sick leave", "ooo", "reassignment"],
+            status: "active",
+          },
+          {
+            id: "ooo-3",
+            title: `${
+              teamMembers[2]?.name || teamMembers[2]?.login || "Carlos Mendes"
+            } - Business Trip`,
+            content: `${
+              teamMembers[2]?.name || teamMembers[2]?.login || "Carlos Mendes"
+            } will be traveling for business meetings from January 22nd to January 24th. Available for urgent calls only.`,
+            category: "OOO",
+            author:
+              teamMembers[2]?.name || teamMembers[2]?.login || "Carlos Mendes",
+            authorAvatar: teamMembers[2]?.avatar_url,
+            date: "2024-01-17",
+            isImportant: false,
+            isRead: false,
+            tags: ["business trip", "ooo", "meetings"],
+            status: "active",
+          },
+
+          // Reimbursements Section - usando membros reais
+          {
+            id: "reimb-1",
+            title: "Conference Expenses Approved",
+            content: `Your reimbursement request for the React Conference expenses ($450) has been approved and will be processed in the next payroll.`,
+            category: "Reimbursements",
+            author:
+              teamMembers[3]?.name || teamMembers[3]?.login || "Finance Team",
+            authorAvatar: teamMembers[3]?.avatar_url,
+            date: "2024-01-19",
+            isImportant: false,
+            isRead: false,
+            tags: ["conference", "expenses", "approved"],
+            status: "approved",
+          },
+          {
+            id: "reimb-2",
+            title: "Equipment Purchase Pending",
+            content: `Your request for a new Mac is under review. Expected approval within 2 business days.`,
+            category: "Reimbursements",
+            author:
+              teamMembers[4]?.name || teamMembers[4]?.login || "IT Department",
+            authorAvatar: teamMembers[4]?.avatar_url,
+            date: "2024-01-18",
+            isImportant: false,
+            isRead: true,
+            tags: ["equipment", "MAC", "pending"],
+            status: "pending",
+          },
+          {
+            id: "reimb-3",
+            title: "Travel Expenses Rejected",
+            content: `Your travel expense claim for $150 has been rejected due to missing receipts. Please resubmit with proper documentation.`,
+            category: "Reimbursements",
+            author:
+              teamMembers[0]?.name || teamMembers[0]?.login || "Finance Team",
+            authorAvatar: teamMembers[0]?.avatar_url,
+            date: "2024-01-16",
+            isImportant: true,
+            isRead: false,
+            tags: ["travel", "expenses", "rejected"],
+            status: "rejected",
+          },
+
+          // Team News Section - mantendo nomes genéricos
+          {
+            id: "news-1",
+            title: "New Team Member - Welcome Fran!",
+            content:
+              "Please welcome Fran to our development team! Fran joins us as a Community Manager and will be working on the new customer portal project.",
+            category: "Team News",
+            author: "HR Department",
+            date: "2024-01-19",
+            isImportant: true,
+            isRead: false,
+            tags: ["new hire", "team", "welcome"],
+          },
+          {
+            id: "news-2",
+            title: "Q4 Results - 30% Growth Achieved!",
+            content:
+              "Congratulations to the entire team! We achieved 30% growth in Q4, exceeding our targets. This success is thanks to everyone's hard work and dedication.",
+            category: "Team News",
+            author: "Management",
+            date: "2024-01-15",
+            isImportant: true,
+            isRead: true,
+            tags: ["results", "growth", "success"],
+          },
+          {
+            id: "news-3",
+            title: "New Project Management Tool",
+            content:
+              "We're implementing ClickUp as our new project management tool. Training sessions will be held next week. This will improve our workflow and collaboration.",
+            category: "Team News",
+            author: "IT Department",
+            date: "2024-01-14",
+            isImportant: false,
+            isRead: false,
+            tags: ["tool", "clickup", "training"],
+          },
+
+          // Alerts Section - usando membros reais
+          {
+            id: "alert-1",
+            title: "Critical: System Maintenance Tonight",
+            content:
+              "Scheduled maintenance tonight from 2:00 AM to 4:00 AM. All systems will be temporarily unavailable. Please save your work before the maintenance window.",
+            category: "Alerts",
+            author:
+              teamMembers[1]?.name || teamMembers[1]?.login || "IT Department",
+            authorAvatar: teamMembers[1]?.avatar_url,
+            date: "2024-01-19",
+            isImportant: true,
+            isRead: false,
+            tags: ["maintenance", "critical", "system"],
+            priority: "critical",
+          },
+          {
+            id: "alert-2",
+            title: "Security Alert: Password Update Required",
+            content:
+              "Due to recent security updates, all employees must update their passwords by the end of this week. Use the password reset tool in the portal.",
+            category: "Alerts",
+            author:
+              teamMembers[2]?.name || teamMembers[2]?.login || "Security Team",
+            authorAvatar: teamMembers[2]?.avatar_url,
+            date: "2024-01-18",
+            isImportant: true,
+            isRead: false,
+            tags: ["security", "password", "update"],
+            priority: "high",
+          },
+          {
+            id: "alert-3",
+            title: "Office Closure - Holiday",
+            content:
+              "The office will be closed on Monday, January 22nd, for the holiday. All employees are encouraged to work remotely if needed.",
+            category: "Alerts",
+            author:
+              teamMembers[3]?.name || teamMembers[3]?.login || "HR Department",
+            authorAvatar: teamMembers[3]?.avatar_url,
+            date: "2024-01-17",
+            isImportant: false,
+            isRead: true,
+            tags: ["holiday", "office", "closure"],
+            priority: "medium",
+          },
+        ];
+      };
+
+      setNews(createNewsWithRealMembers());
+    }
+  }, [members]);
+
+  const categories = ["All", "OOO", "Reimbursements", "Team News", "Alerts"];
 
   const filteredNews = news.filter((item) => {
     const matchesSearch =
@@ -113,6 +266,51 @@ export default function NewsPage() {
     });
   };
 
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case "OOO":
+        return <Users className="h-4 w-4" />;
+      case "Reimbursements":
+        return <Receipt className="h-4 w-4" />;
+      case "Team News":
+        return <TrendingUp className="h-4 w-4" />;
+      case "Alerts":
+        return <AlertTriangle className="h-4 w-4" />;
+      default:
+        return <Tag className="h-4 w-4" />;
+    }
+  };
+
+  const getStatusIcon = (status?: string) => {
+    switch (status) {
+      case "approved":
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case "rejected":
+        return <XCircle className="h-4 w-4 text-red-500" />;
+      case "pending":
+        return <Clock className="h-4 w-4 text-yellow-500" />;
+      case "active":
+        return <MessageSquare className="h-4 w-4 text-blue-500" />;
+      default:
+        return null;
+    }
+  };
+
+  const getPriorityColor = (priority?: string) => {
+    switch (priority) {
+      case "critical":
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
+      case "high":
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
+      case "low":
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <Header />
@@ -121,13 +319,16 @@ export default function NewsPage() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-4">
-            <Bell className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
+              <Bell className="h-8 w-8 text-white" />
+            </div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
-              Company News
+              GateFul News
             </h1>
           </div>
           <p className="text-gray-600 dark:text-gray-300 transition-colors duration-300">
-            Stay up to date with the latest news, policies and company events
+            Stay updated with OOO status, reimbursements, team news, and
+            important alerts
           </p>
         </div>
 
@@ -140,7 +341,7 @@ export default function NewsPage() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
                 <input
                   type="text"
-                  placeholder="Search news..."
+                  placeholder="Search GateFul News..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
@@ -180,7 +381,7 @@ export default function NewsPage() {
               {/* Counter */}
               <div className="flex items-center justify-end">
                 <span className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
-                  {filteredNews.length} news item
+                  {filteredNews.length} item
                   {filteredNews.length !== 1 ? "s" : ""}
                 </span>
               </div>
@@ -215,18 +416,38 @@ export default function NewsPage() {
                         New
                       </span>
                     )}
+                    {item.priority && (
+                      <span
+                        className={`text-xs px-2 py-1 rounded-full transition-colors duration-300 ${getPriorityColor(
+                          item.priority
+                        )}`}
+                      >
+                        {item.priority.charAt(0).toUpperCase() +
+                          item.priority.slice(1)}
+                      </span>
+                    )}
+                    {item.status && getStatusIcon(item.status)}
                   </div>
 
                   <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400 mb-3 transition-colors duration-300">
                     <div className="flex items-center space-x-1">
-                      <Tag className="h-4 w-4" />
+                      {getCategoryIcon(item.category)}
                       <span>{item.category}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Calendar className="h-4 w-4" />
                       <span>{formatDate(item.date)}</span>
                     </div>
-                    <span>By: {item.author}</span>
+                    <div className="flex items-center space-x-2">
+                      {item.authorAvatar && (
+                        <img
+                          src={item.authorAvatar}
+                          alt={item.author}
+                          className="w-4 h-4 rounded-full"
+                        />
+                      )}
+                      <span>By: {item.author}</span>
+                    </div>
                   </div>
 
                   <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 transition-colors duration-300">

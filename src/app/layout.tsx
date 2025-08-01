@@ -3,8 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Merriweather, Reddit_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { SessionProvider } from "next-auth/react";
-import { UserSync } from "@/components/UserSync";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
+import { RoleProvider } from "@/contexts/RoleContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,15 +48,18 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${merriweather.variable} ${redditMono.variable} antialiased`}
       >
         <SessionProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <UserSync />
-            {children}
-          </ThemeProvider>
+          <RoleProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Toaster />
+              {/* <RoleChangeIndicator /> */}
+              {children}
+            </ThemeProvider>
+          </RoleProvider>
         </SessionProvider>
       </body>
     </html>
