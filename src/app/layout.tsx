@@ -6,6 +6,7 @@ import { SessionProvider } from "next-auth/react";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { RoleProvider } from "@/contexts/RoleContext";
+import { WalletProvider } from "@/components/WalletProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,16 +50,18 @@ export default function RootLayout({
       >
         <SessionProvider>
           <RoleProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <Toaster />
-              {/* <RoleChangeIndicator /> */}
-              {children}
-            </ThemeProvider>
+            <WalletProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <Toaster />
+                {/* <RoleChangeIndicator /> */}
+                {children}
+              </ThemeProvider>
+            </WalletProvider>
           </RoleProvider>
         </SessionProvider>
       </body>

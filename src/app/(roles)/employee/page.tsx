@@ -8,6 +8,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
+import { WalletInfo } from "@/components/WalletInfo";
 
 export default function EmployeeDashboard() {
   const employeeStats = [
@@ -84,6 +85,14 @@ export default function EmployeeDashboard() {
 
   return (
     <div className="space-y-8">
+      {/* Wallet Info Section */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          Crypto Wallet
+        </h3>
+        <WalletInfo />
+      </div>
+
       {/* Welcome Section */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">

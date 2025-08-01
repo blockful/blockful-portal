@@ -23,6 +23,7 @@ import { cn } from "@/app/shared/lib/cn";
 import { useRouter } from "next/navigation";
 import { useRole } from "@/contexts/RoleContext";
 import { RoleSwitcher } from "./RoleSwitcher";
+import { WalletConnect } from "./WalletConnect";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -74,6 +75,7 @@ export const Header = () => {
 
           {/* User Menu */}
           <div className="hidden md:flex items-center space-x-4">
+            <WalletConnect />
             <RoleSwitcher />
             <ThemeSwitch />
             <button
@@ -167,6 +169,7 @@ export const Header = () => {
                 }`}
               >
                 <div className="flex items-center justify-between">
+                  <WalletConnect />
                   <ThemeSwitch />
                   <button
                     className={cn(
