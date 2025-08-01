@@ -9,11 +9,15 @@ import {
   Receipt,
   Calendar,
   RefreshCw,
+  ArrowRight,
 } from "lucide-react";
 import { useGitHubMembers } from "@/hooks/useGitHubMembers";
 import { useMemberStats } from "@/hooks/useMemberStats";
+import { useRouter } from "next/navigation";
 
 export default function AdminDashboard() {
+  const router = useRouter();
+  
   const {
     members,
     loading: membersLoading,
@@ -293,7 +297,40 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Reimbursements Management */}
+        <div 
+          className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-xl transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+          onClick={() => router.push('/admin/reimbursement')}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Reimbursements
+            </h3>
+            <Receipt className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+          </div>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600 dark:text-gray-300">Total Requests</span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">
+                {totalReimbursements}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600 dark:text-gray-300">Pending</span>
+              <span className="text-yellow-600 dark:text-yellow-400 font-medium">
+                {pendingReimbursements}
+              </span>
+            </div>
+            <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-200 dark:border-gray-600">
+              <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+                Manage Reimbursements
+              </span>
+              <ArrowRight className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            </div>
+          </div>
+        </div>
+
         {/* System Status */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
