@@ -124,9 +124,11 @@ export const Header = () => {
               </div>
             ) : (
               <button
-                onClick={() => {
+                onClick={async () => {
                   sounds.play();
-                  signIn();
+                  const result = await signIn();
+                  // The UserSync component will handle syncing to backend
+                  console.log('Sign in result:', result);
                 }}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
               >
@@ -189,9 +191,11 @@ export const Header = () => {
                     </button>
                   ) : (
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         sounds.play();
-                        signIn();
+                        const result = await signIn();
+                        // The UserSync component will handle syncing to backend
+                        console.log('Sign in result:', result);
                       }}
                       className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-300"
                     >

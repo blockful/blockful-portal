@@ -39,18 +39,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   //   signIn: "/auth/signin",
   //   error: "/auth/error",
   // },
-  // callbacks: {
-  //   async jwt({ token, account, profile }) {
-  //     // Persist the OAuth access_token and or the user id to the token right after signin
-  //     if (account) {
-  //       token.accessToken = account.access_token;
-  //     }
-  //     return token;
-  //   },
-  //   async session({ session, token }) {
-  //     // Send properties to the client, like an access_token and user id from a provider.
-  //     session.accessToken = token.accessToken;
-  //     return session;
-  //   },
-  // },
+  callbacks: {
+    async jwt({ token, account, profile }) {
+      // Persist the OAuth access_token and or the user id to the token right after signin
+      if (account) {
+        token.accessToken = account.access_token;
+        token.provider = account.provider;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      // Send properties to the client, like an access_token and user id from a provider.
+      session.accessToken = token.accessToken;
+      session.provider = token.provider;
+      return session;
+    },
+  },
 });

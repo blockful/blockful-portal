@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Merriweather, Reddit_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { SessionProvider } from "next-auth/react";
+import { UserSync } from "@/components/UserSync";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -52,6 +53,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <UserSync />
             {children}
           </ThemeProvider>
         </SessionProvider>
