@@ -6,6 +6,9 @@ export interface ReimbursementRequest {
   currency?: string;
   description?: string;
   invoiceDate: string;
+  userName: string;
+  userEmail: string;
+  userAddress?: string;
   file: File;
 }
 
@@ -13,6 +16,9 @@ export interface ReimbursementResponse {
   message: string;
   reimbursement: {
     id: string;
+    userName: string;
+    userEmail: string;
+    userAddress: string | null;
     amount: number;
     currency: string;
     description: string | null;
@@ -85,6 +91,11 @@ export const reimbursementsApi = {
         formData.append('description', data.description);
       }
       formData.append('invoiceDate', data.invoiceDate);
+      formData.append('userName', data.userName);
+      formData.append('userEmail', data.userEmail);
+      if (data.userAddress) {
+        formData.append('userAddress', data.userAddress);
+      }
       formData.append('file', data.file);
 
       const response = await apiClient.post<ReimbursementResponse>('/reimbursements', formData, {
@@ -112,11 +123,34 @@ export const reimbursementsApi = {
     try {
       const apiClient = createApiClient(accessToken);
       const response = await apiClient.get('/reimbursements');
-      return response.data;
+      return {
+        reimbursements: response.data.reimbursements || response.data || []
+      };
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('Error fetching reimbursements:', error.response?.data || error.message);
         throw new Error(error.response?.data?.error || 'Failed to fetch reimbursements');
+      }
+      throw error;
+    }
+  },
+
+  /**
+   * Get all reimbursements (admin view)
+   * @param accessToken - Optional access token for authentication
+   * @returns Promise with all reimbursements list
+   */
+  getAllReimbursements: async (accessToken?: string) => {
+    try {
+      const apiClient = createApiClient(accessToken);
+      const response = await apiClient.get('/reimbursements');
+      return {
+        reimbursements: response.data.reimbursements || response.data || []
+      };
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error fetching all reimbursements:', error.response?.data || error.message);
+        throw new Error(error.response?.data?.error || 'Failed to fetch all reimbursements');
       }
       throw error;
     }
