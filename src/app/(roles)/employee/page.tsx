@@ -6,6 +6,8 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
+  Eye,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import { WalletInfo } from "@/components/WalletInfo";
@@ -53,16 +55,23 @@ export default function EmployeeDashboard() {
     {
       title: "Set OOO Status",
       description: "Configure out of office status",
-      icon: MessageSquare,
+      icon: Clock,
       href: "/employee/ooo",
       color: "bg-green-500",
+    },
+    {
+      title: "View OOO Overview",
+      description: "See team status and your OOO history",
+      icon: Eye,
+      href: "/employee/ooo-list",
+      color: "bg-purple-500",
     },
     {
       title: "GateFul News",
       description: "OOO, reimbursements, team news & alerts",
       icon: Bell,
       href: "/news",
-      color: "bg-purple-500",
+      color: "bg-yellow-500",
     },
     {
       title: "Calendar",
@@ -70,6 +79,13 @@ export default function EmployeeDashboard() {
       icon: Calendar,
       href: "/employee/calendar",
       color: "bg-orange-500",
+    },
+    {
+      title: "Team Members",
+      description: "View team directory and contacts",
+      icon: Users,
+      href: "/employee/team",
+      color: "bg-indigo-500",
     },
   ];
 
@@ -145,7 +161,7 @@ export default function EmployeeDashboard() {
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Quick Actions
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {quickActions.map((action, index) => {
             const Icon = action.icon;
             return (

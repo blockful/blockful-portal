@@ -131,8 +131,11 @@ export const oooApi = {
     try {
       const apiClient = createApiClient();
       const response = await apiClient.get('/ooo');
+      const data = response.data.ooo || response.data.oooStatuses || response.data || [];
+      // Ensure we always return an array
+      const oooStatuses = Array.isArray(data) ? data : [];
       return {
-        oooStatuses: response.data.oooStatuses || response.data || []
+        oooStatuses
       };
     } catch (error) {
       if (axios.isAxiosError(error)) {

@@ -10,6 +10,7 @@ import {
   Calendar,
   RefreshCw,
   ArrowRight,
+  Clock,
 } from "lucide-react";
 import { useGitHubMembers } from "@/hooks/useGitHubMembers";
 import { useMemberStats } from "@/hooks/useMemberStats";
@@ -297,7 +298,40 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        {/* OOO Management */}
+        <div 
+          className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-xl transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+          onClick={() => router.push('/admin/ooo')}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              OOO Management
+            </h3>
+            <Clock className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+          </div>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600 dark:text-gray-300">Total OOO Records</span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">
+                {totalOOO}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600 dark:text-gray-300">Currently Active</span>
+              <span className="text-purple-600 dark:text-purple-400 font-medium">
+                {activeOOO}
+              </span>
+            </div>
+            <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-200 dark:border-gray-600">
+              <span className="text-sm text-purple-600 dark:text-purple-400 font-medium">
+                Manage OOO Status
+              </span>
+              <ArrowRight className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+            </div>
+          </div>
+        </div>
+
         {/* Reimbursements Management */}
         <div 
           className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-xl transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700"
